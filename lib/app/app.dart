@@ -17,7 +17,7 @@ class _AppState extends State<App> {
     super.initState();
     Timer(Duration(seconds: 5), () {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => GridViewScreen()),
+        MaterialPageRoute(builder: (_) => GridViewScreen(nameData: "Aashista")),
       );
     });
   }

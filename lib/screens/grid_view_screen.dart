@@ -1,60 +1,67 @@
 import 'package:flutter/material.dart';
-import '../common/my_button.dart'; // Import the MyButton class
 
 class GridViewScreen extends StatefulWidget {
-  const GridViewScreen({Key? key}) : super(key: key);
+  final String nameData;
+  const GridViewScreen({required this.nameData, super.key});
 
   @override
-  _GridViewScreenState createState() => _GridViewScreenState();
+  State<GridViewScreen> createState() => _GridViewScreenState();
 }
 
 class _GridViewScreenState extends State<GridViewScreen> {
-  final String name = "Aashista";
-  List<ButtonState> buttonStates = []; // Initialize as empty list
-  int currentIndex = 0; // Track the index of the next visible button
+  late List<String> letters;
+  late List<bool> isClicked;
 
   @override
   void initState() {
+    letters = widget.nameData.split('');
+    isClicked = List.generate(widget.nameData.length, (index) => false);
     super.initState();
-    buttonStates = List.generate(name.length, (index) => ButtonState.visible);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('GridView Screen'),
+        title: const Text("GridView"),
+        backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
+        centerTitle: true,
       ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(20),
-        itemCount: name.length, // Use name.length for dynamic count
-        itemBuilder: (context, index) {
-          return MyButton(
-            letter: name[index],
-            state: buttonStates[index],
-            onPressed: () {
-              setState(() {
-                if (buttonStates[index] == ButtonState.visible) {
-                  buttonStates[index] = ButtonState.pressed;
-                } else if (buttonStates[index] == ButtonState.pressed) {
-                  buttonStates[index] = ButtonState.inactive;
-
-                  // Find the next visible button
-                  currentIndex = (index + 1) % name.length;
-                  while (buttonStates[currentIndex] == ButtonState.inactive) {
-                    currentIndex = (currentIndex + 1) % name.length;
+      body: GridView.count(
+        crossAxisCount: 2,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        children: [
+          for (int i = 0; i < letters.length; i++)
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  if (isClicked[i]) {
+                    letters.removeAt(i);
+                    isClicked.removeAt(i);
+                  } else {
+                    isClicked[i] = true;
                   }
-                  buttonStates[currentIndex] = ButtonState.visible;
-                }
-              });
-            },
-          );
-        },
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          crossAxisCount: 2,
-        ),
+                });
+              },
+              style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.resolveWith<Color>((states) {
+                  if (isClicked[i]) {
+                    return Colors.red;
+                  } else {
+                    return Colors.transparent;
+                  }
+                }),
+              ),
+              child: Text(
+                letters[i],
+                style:
+                    const TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+              ),
+            ),
+        ],
       ),
     );
   }
